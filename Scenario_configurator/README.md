@@ -23,5 +23,3 @@ In order to launch the optimization, open "main.py", check the file paths and se
 
 ## Additional info
 The tool can be exploited for generating several different scenarios: copy the SETS and PARAMETERS files in different folders, compile the PARAMETERS workbook and repeat steps 3 and 4 for every scenario). Also, the "main.py" code can be expanded in order to directly optimize the whole batch of scenarios and compare the outcomes.
-
-1,2,3 PROVA
