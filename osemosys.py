@@ -1227,6 +1227,7 @@ def StorageLevelDayTypeStart_rule(model, r, s, ls, ld, y):
                 model.NetChargeWithinDay[r, s, ls, ld - 1, lh, y]
                 for lh in model.DAILYTIMEBRACKET
             )
+	    * model.DaysInDayType[ls, ld - 1, y]
             == model.StorageLevelDayTypeStart[r, s, ls, ld, y]
         )
 
