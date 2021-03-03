@@ -4,4 +4,4 @@ before_install:
 install:
   - pip install pyomo
 script:
-  - pyomo solve --solver=glpk osemosys.py UTOPIA_2015_08_27.dat
+  main
