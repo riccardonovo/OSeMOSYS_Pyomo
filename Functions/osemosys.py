@@ -14,10 +14,11 @@ OSeMOSYS: Open Source energy MOdeling SYStem
 """
 
 """
-    Updated version on the 2020-07-16 by RN
-    Two new parameters have been added:
-    - TotalTechnologyTimesliceActivityUpperLimit
-    - TotalTechnologyTimesliceActivityLowerLimit
+    Updated version on the 2021-03-03
+    Changes:
+        - creation of the funciton osemosys_model to be called by the main.py script
+        - addition of the Dispatchable Generation parameters, variables and equations
+        - correction of the StoragelevelDayTypeStart_rule
 """
 
 #############################################################################
@@ -30,9 +31,7 @@ from pyomo.core import *
 from pyomo.opt import SolverFactory
 import pyomo.environ as pyo
 import pandas as pd
-
-file_dat = r'D:\Dati\PycharmProjects\OSeMOSYS_Pantelleria\Data\Pantelleria_Base\Input.dat'
-file_json = r'D:\Dati\PycharmProjects\OSeMOSYS_Pantelleria\Data\Pantelleria_Base\results.json'
+import os
 
 
 def osemosys_model(file_dat, file_json, solver):
@@ -2352,3 +2351,15 @@ def osemosys_model(file_dat, file_json, solver):
     results.write(filename=file_json, format='json')  # saving the results file
     print('End of the OSeMOSYS-Pyomo model resolution')
     return model, instance, results
+
+if __name__ == "__main__":
+    # Paths and files
+    path_parent = os.path.dirname(os.getcwd())
+    data_folder = os.path.join(path_parent,'Data')
+    file_dat = os.path.join(data_folder, "Input.dat")
+    file_json = os.path.join(data_folder, "results.json")
+    solver = 'cplex'
+    
+    # Run
+    model, instance, results = osemosys_model(file_dat, file_json, solver)
+    

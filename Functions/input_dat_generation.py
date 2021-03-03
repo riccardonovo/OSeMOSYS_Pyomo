@@ -1,3 +1,9 @@
+""" 
+Script developed @ the Energy Center Lab of Politecnico di Torino.
+Version: 2021-03-03
+Maintainer: Riccardo Novo (riccardo.novo@polito.it)
+"""
+
 # This code permits to create a .dat input file for OSeMOSYS-Pyomo starting from sets and parameters that were
 # contained in xlsx files
 

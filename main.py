@@ -1,3 +1,9 @@
+""" 
+Script developed @ the Energy Center Lab of Politecnico di Torino.
+Version: 2021-03-03
+Maintainer: Riccardo Novo (riccardo.novo@polito.it)
+"""
+
 from __future__ import division
 import sys
 import os
