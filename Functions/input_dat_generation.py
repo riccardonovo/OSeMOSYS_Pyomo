@@ -25,46 +25,48 @@ def dat_generation(file_sets, file_parameters, file_dat):
     ### WRITING THE SETS FOR THE .dat FILE
     f_dat.write('###############\n#    Sets     #\n###############\n\n')
     for col in df_sets.columns:
-        str = 'set ' + col + ' :=\n'
-        f_dat.write(str)
-        text = df_sets[col].dropna().tolist()
-        f_dat.write('\n'.join(text))
-        f_dat.write('\n  ;\n\n')
+        if not df_sets[col].isnull().all():
+            str = 'set ' + col + ' :=\n'
+            f_dat.write(str)
+            text = df_sets[col].dropna().tolist()
+            f_dat.write('\n'.join(text))
+            f_dat.write('\n  ;\n\n')
 
     ### WRITING THE PARAMETERS FOR THE .dat FILE WHILE READING THE PARAMETERS EXCEL FILE
     f_dat.write('####################\n#    Parameters     #\n####################\n\n')
     for index, row in df_par.iterrows():  # for loop over the list of input parameters
         dfp = pd.read_excel(file_parameters, row['Short name'],
                             dtype='str')  # reads the excel sheet named with the short name at the first page
-        str = 'param ' + df_par.loc[index, 'Full name'] + ':=\n'
-        f_dat.write(str)
-        n_sets = sum(pd.notnull(df_par.iloc[index, 5:]).tolist())  # calculate the number of SETS for that parameter
-        if n_sets == 5:
-            for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
-                f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
-                            dfp.iloc[index_par, 2] + '\t' +
-                            dfp.iloc[index_par, 3] + '\t' +
-                            dfp.iloc[index_par, 4] + '\t' +
-                            dfp.iloc[index_par, 5] + '\n')
-        if n_sets == 4:
-            for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
-                f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
-                            dfp.iloc[index_par, 2] + '\t' +
-                            dfp.iloc[index_par, 3] + '\t' +
-                            dfp.iloc[index_par, 4] + '\n')
-        if n_sets == 3:
-            for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
-                f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
-                            dfp.iloc[index_par, 2] + '\t' +
-                            dfp.iloc[index_par, 3] + '\n')
-        if n_sets == 2:
-            for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
-                f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
-                            dfp.iloc[index_par, 2] + '\n')
-        if n_sets == 1:
-            for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
-                f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\n')
-        f_dat.write(';\n\n')
+        if not dfp.empty:
+            str = 'param ' + df_par.loc[index, 'Full name'] + ':=\n'
+            f_dat.write(str)
+            n_sets = sum(pd.notnull(df_par.iloc[index, 5:]).tolist())  # calculate the number of SETS for that parameter
+            if n_sets == 5:
+                for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
+                    f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
+                                dfp.iloc[index_par, 2] + '\t' +
+                                dfp.iloc[index_par, 3] + '\t' +
+                                dfp.iloc[index_par, 4] + '\t' +
+                                dfp.iloc[index_par, 5] + '\n')
+            if n_sets == 4:
+                for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
+                    f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
+                                dfp.iloc[index_par, 2] + '\t' +
+                                dfp.iloc[index_par, 3] + '\t' +
+                                dfp.iloc[index_par, 4] + '\n')
+            if n_sets == 3:
+                for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
+                    f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
+                                dfp.iloc[index_par, 2] + '\t' +
+                                dfp.iloc[index_par, 3] + '\n')
+            if n_sets == 2:
+                for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
+                    f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\t' +
+                                dfp.iloc[index_par, 2] + '\n')
+            if n_sets == 1:
+                for index_par, row_par in dfp.iterrows():  # for loop over the sheet of the current parameter
+                    f_dat.write(dfp.iloc[index_par, 0] + '\t' + dfp.iloc[index_par, 1] + '\n')
+            f_dat.write(';\n\n')
 
     # ### CLOSING THE FILE
     f_dat.close()
