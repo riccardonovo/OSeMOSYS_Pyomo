@@ -25,7 +25,7 @@ The following files and folders are contained in the master folder:
 - Data folder: folder containing the Input.dat input file and the results.json output file
 - Functions folder: folder containing the input_dat_generation.py script and the
 - Scenario_configurator folder: fodler containing the scenario configurator (see README_scenario_configurator.md)
-- CHANGELOD.md: log file containing changes wrt. previous versions of OSeMOSYS
+- CHANGELOG.md: log file containing changes wrt. previous versions of OSeMOSYS
 - README.md: current file
 
 
