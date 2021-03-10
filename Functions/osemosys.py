@@ -14,11 +14,9 @@ OSeMOSYS: Open Source energy MOdeling SYStem
 """
 
 """
-    Updated version on the 2021-03-03
-    Changes:
-        - creation of the funciton osemosys_model to be called by the main.py script
-        - addition of the Dispatchable Generation parameters, variables and equations
-        - correction of the StoragelevelDayTypeStart_rule
+    Updated version on the 2021-03-10
+        Changes:
+        - parameters default values have been changed and updated to those of the 2_Parameters.xlsx file
 """
 
 #############################################################################
@@ -62,7 +60,7 @@ def osemosys_model(file_dat, file_json, solver):
     ########			Global 						#############
     
     model.YearSplit = Param(model.TIMESLICE, model.YEAR)
-    model.DiscountRate = Param(model.REGION, default=0.05)
+    model.DiscountRate = Param(model.REGION, default=0.04)
     model.DaySplit = Param(model.DAILYTIMEBRACKET, model.YEAR, default=0.00137)
     model.Conversionls = Param(model.TIMESLICE, model.SEASON, default=0)
     model.Conversionld = Param(model.TIMESLICE, model.DAYTYPE, default=0)
@@ -83,7 +81,7 @@ def osemosys_model(file_dat, file_json, solver):
     
     model.CapacityToActivityUnit = Param(model.REGION, model.TECHNOLOGY, default=1)
     model.CapacityFactor = Param(
-        model.REGION, model.TECHNOLOGY, model.TIMESLICE, model.YEAR, default=1
+        model.REGION, model.TECHNOLOGY, model.TIMESLICE, model.YEAR, default=0.95
     )
     model.AvailabilityFactor = Param(model.REGION, model.TECHNOLOGY, model.YEAR, default=1)
     model.OperationalLife = Param(model.REGION, model.TECHNOLOGY, default=1)
@@ -107,13 +105,13 @@ def osemosys_model(file_dat, file_json, solver):
     
     #########			Technology Costs			#############
     
-    model.CapitalCost = Param(model.REGION, model.TECHNOLOGY, model.YEAR, default=0.000001)
+    model.CapitalCost = Param(model.REGION, model.TECHNOLOGY, model.YEAR, default=0.00001)
     model.VariableCost = Param(
         model.REGION,
         model.TECHNOLOGY,
         model.MODE_OF_OPERATION,
         model.YEAR,
-        default=0.000001,
+        default=0.00001,
     )
     model.FixedCost = Param(model.REGION, model.TECHNOLOGY, model.YEAR, default=0)
     
@@ -125,9 +123,9 @@ def osemosys_model(file_dat, file_json, solver):
     model.TechnologyFromStorage = Param(
         model.REGION, model.TECHNOLOGY, model.STORAGE, model.MODE_OF_OPERATION, default=0
     )
-    model.StorageLevelStart = Param(model.REGION, model.STORAGE, default=0.0000001)
-    model.StorageMaxChargeRate = Param(model.REGION, model.STORAGE, default=99999)
-    model.StorageMaxDischargeRate = Param(model.REGION, model.STORAGE, default=99999)
+    model.StorageLevelStart = Param(model.REGION, model.STORAGE, default=0)
+    model.StorageMaxChargeRate = Param(model.REGION, model.STORAGE, default=99999999)
+    model.StorageMaxDischargeRate = Param(model.REGION, model.STORAGE, default=99999999)
     model.MinStorageCharge = Param(model.REGION, model.STORAGE, model.YEAR, default=0)
     model.OperationalLifeStorage = Param(model.REGION, model.STORAGE, default=0)
     model.CapitalCostStorage = Param(model.REGION, model.STORAGE, model.YEAR, default=0)
@@ -141,7 +139,7 @@ def osemosys_model(file_dat, file_json, solver):
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
     )
     model.TotalAnnualMaxCapacity = Param(
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=9999999999
     )
     model.TotalAnnualMinCapacity = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
@@ -150,7 +148,7 @@ def osemosys_model(file_dat, file_json, solver):
     #########			Investment Constraints		#############
     
     model.TotalAnnualMaxCapacityInvestment = Param(
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=9999999999
     )
     model.TotalAnnualMinCapacityInvestment = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
@@ -159,13 +157,13 @@ def osemosys_model(file_dat, file_json, solver):
     #########			Activity Constraints		#############
     
     model.TotalTechnologyAnnualActivityUpperLimit = Param(
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=9999999999
     )
     model.TotalTechnologyAnnualActivityLowerLimit = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
     )
     model.TotalTechnologyModelPeriodActivityUpperLimit = Param(
-        model.REGION, model.TECHNOLOGY, default=99999
+        model.REGION, model.TECHNOLOGY, default=9999999999
     )
     model.TotalTechnologyModelPeriodActivityLowerLimit = Param(
         model.REGION, model.TECHNOLOGY, default=0
@@ -200,10 +198,10 @@ def osemosys_model(file_dat, file_json, solver):
         model.REGION, model.EMISSION, model.YEAR, default=0
     )
     model.AnnualEmissionLimit = Param(
-        model.REGION, model.EMISSION, model.YEAR, default=99999
+        model.REGION, model.EMISSION, model.YEAR, default=99999999999
     )
     model.ModelPeriodExogenousEmission = Param(model.REGION, model.EMISSION, default=0)
-    model.ModelPeriodEmissionLimit = Param(model.REGION, model.EMISSION, default=99999)
+    model.ModelPeriodEmissionLimit = Param(model.REGION, model.EMISSION, default=99999999999)
     
     # #########			Dispatchable Generation		#############
     
@@ -2227,85 +2225,85 @@ def osemosys_model(file_dat, file_json, solver):
     
     
     def FuelProductionByTechnologyAnnual_rule(model, r, t, f, y):
-    	return (
+     	return (
     		sum(
-    			model.ProductionByTechnology[r, l, t, f, y]
-    			for l in model.TIMESLICE
+     			model.ProductionByTechnology[r, l, t, f, y]
+     			for l in model.TIMESLICE
     		)
     		== model.ProductionByTechnologyAnnual[r, t, f, y]
-    	)
+     	)
     	
     	
     model.FuelProductionByTechnologyAnnual = Constraint(
-    	model.REGION, model.TECHNOLOGY, model.FUEL, model.YEAR, rule=FuelProductionByTechnologyAnnual_rule
+     	model.REGION, model.TECHNOLOGY, model.FUEL, model.YEAR, rule=FuelProductionByTechnologyAnnual_rule
     )
     
     
     def TechIncluded_rule(model, r, y):
-    	return (
+     	return (
     		sum(
-    			model.ProductionByTechnologyAnnual[r, t, f, y]
-    			* model.RETagTechnology[r, t, y]
-    			for t in model.TECHNOLOGY
-    			for f in model.FUEL
+     			model.ProductionByTechnologyAnnual[r, t, f, y]
+     			* model.RETagTechnology[r, t, y]
+     			for t in model.TECHNOLOGY
+     			for f in model.FUEL
     		)
     		== model.TotalREProductionAnnual[r, y]
-    	)
+     	)
     
     
     model.TechIncluded = Constraint(
-    	model.REGION, model.YEAR, rule=TechIncluded_rule
+     	model.REGION, model.YEAR, rule=TechIncluded_rule
     )
     
     
     def FuelIncluded_rule(model, r, y):
-    	return (
+     	return (
     		sum(
-    			model.RateOfProduction[r, l, f, y]
-    			* model.RETagFuel[r, f, y]
-    			* model.YearSplit[l, y]
-    			for f in model.FUEL
-    			for l in model.TIMESLICE
+     			model.RateOfProduction[r, l, f, y]
+     			* model.RETagFuel[r, f, y]
+     			* model.YearSplit[l, y]
+     			for f in model.FUEL
+     			for l in model.TIMESLICE
     		)
     		== model.RETotalProductionOfTargetFuelAnnual[r, y]
-    	)
+     	)
     
     
     model.FuelIncluded = Constraint(
-    	model.REGION, model.YEAR, rule=FuelIncluded_rule
+     	model.REGION, model.YEAR, rule=FuelIncluded_rule
     )
     
     
     def EnergyConstraint_rule(model, r, y):
-    	return (
+     	return (
     		model.REMinProductionTarget[r, y]
     		* model.RETotalProductionOfTargetFuelAnnual[r, y]
     		<= model.TotalREProductionAnnual[r, y]
-    	)
+     	)
     
     
     model.EnergyConstraint = Constraint(
-    	model.REGION, model.YEAR, rule=EnergyConstraint_rule
+     	model.REGION, model.YEAR, rule=EnergyConstraint_rule
     )
     
     
     def FuelUseByTechnologyAnnual_rule(model, r, t, f, y):
-    	return (
+     	return (
     		sum(
-    			model.RateOfUseByTechnology[r, l, t, f, y]*
-    			model.YearSplit[l, y]
-    			for l in model.TIMESLICE
+     			model.RateOfUseByTechnology[r, l, t, f, y]*
+     			model.YearSplit[l, y]
+     			for l in model.TIMESLICE
     		)
     		== model.UseByTechnologyAnnual[r, t, f, y]
-    	)
+     	)
     
     
     model.FuelUseByTechnologyAnnual = Constraint(
-    	model.REGION, model.TECHNOLOGY, model.FUEL, model.YEAR, rule=FuelUseByTechnologyAnnual_rule
+     	model.REGION, model.TECHNOLOGY, model.FUEL, model.YEAR, rule=FuelUseByTechnologyAnnual_rule
     )
     
     
-    # #########			Dispatchable Generation		#############
+    #########			Dispatchable Generation		#############
 
     def DGTechnologyProductionTimeSlice_rule(model, r, l, t, f, y):
         return (
